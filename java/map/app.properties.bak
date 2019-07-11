@@ -1,0 +1,4 @@
+cityNo=330100
+radius=300
+minMailCount=200
+#输入坐标文件,从1.json，到1000.json，根据地市分目录
