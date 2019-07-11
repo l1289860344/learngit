@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width">
+    <title>点聚合</title>
+    <script src="../js/jquery-1.11.2.min.js"></script>
+    <link rel="stylesheet" href="https://a.amap.com/jsapi_demos/static/demo-center/css/demo-center.css"/>
+    <style>
+        html, body, #container {
+            height: 100%;
+            width: 100%;
+        }
+
+        .input-card {
+            width: 25rem;
+        }
+
+        .input-card .btn {
+            width: 7rem;
+            margin-right: .7rem;
+        }
+
+        .input-card .btn:last-child {
+            margin-right: 0;
+        }
+    </style>
+</head>
+<body>
+<div id="container" class="map" tabindex="0"></div>
+<div class="input-card">
+    <h4>聚合点效果切换</h4>
+    <div class="input-item">
+        <input type="button" class="btn" value="默认样式" id="add0" onclick='addCluster(0)'/>
+        <input type="button" class="btn" value="自定义图标" id="add1" onclick='addCluster(1)'/>
+        <input type="button" class="btn" value="完全自定义" id="add2" onclick='addCluster(2)'/>
+    </div>
+</div>
+<script src="./json150-1.js"></script>
+<script src="./json150-2.js"></script>
+<script src="./json150-3.js"></script>
+<script src="./json150-4.js"></script>
+<script src="./json150-5.js"></script>
+<!--<script src="./mail.js"></script>-->
+<script type="text/javascript">
+
+
+    console.log("jjjjjjjjjjjjjjjjjjjjjjjj")
+
+    //
+    // console.log(mails2);
+    // console.log(mails3);
+    // console.log(mails4);
+    // console.log(mails5);
+    mails = mails.concat(mails2)
+    mails = mails.concat(mails3)
+    mails = mails.concat(mails4)
+    mails = mails.concat(mails5)
+    console.log(mails);
+    // doMap()
+
+</script>
+</body>
+</html>

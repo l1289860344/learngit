@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head> 
+<meta charset="utf-8"> 
+<title>Lj</title> 
+</head>
+<body>
+
+</body>
+<script type="text/javascript" src="./testlist.js"></script>
+<script type="text/javascript">
+	var jiaozhengcishu=0
+	//计算欧式距离
+	function juli(node1,node2){
+		JLx=node1.x-node2.x
+		JLy=node1.y-node2.y
+
+		return Math.sqrt(JLx*JLx+JLy*JLy);
+	}
+	//
+	function finalkeamsclass(datalist,classnumber,centerlist,vestinmap){
+		var changgenumber=0
+		for (var i = datalist.length - 1; i >= 0; i--) {
+			var minjuli=-1
+			var centerPoint=0
+			for (var j = centerlist.length - 1; j >= 0; j--) {
+				var tmpjuli=juli(datalist[i],centerlist[j]);	
+				if(tmpjuli<minjuli||minjuli==-1){
+					centerPoint=j+1;
+					minjuli=tmpjuli;
+					
+				}
+			}
+			if(vestinmap[i]!=centerPoint){
+				changgenumber++;
+				vestinmap[i]=centerPoint
+			}
+		}
+		if(changgenumber==0){
+			console.log("校正结束");
+			return vestinmap;
+		}
+		else {
+			console.log("校正中"+ ++jiaozhengcishu);
+			console.log(vestinmap);
+		}
+		centerlist=[]
+		for (var i = classnumber; i > 0; i--) {
+			var allcount=0;
+			var allx=0;
+			var ally=0;
+			for (var j = vestinmap.length - 1; j >= 0; j--) {
+				if(vestinmap[j]==i){
+					allcount++;
+					allx=allx+datalist[j].x
+					ally=ally+datalist[j].y
+				}
+			}
+			if(allcount>0){
+				finalcenterx=allx/allcount;
+				finalcentery=ally/allcount;
+				centerlist.unshift({x:finalcenterx,y:finalcentery})
+			}
+		}
+		return finalkeamsclass(datalist,classnumber,centerlist,vestinmap)
+	}
+	function Kmeans(datalist,classnumber){
+		console.log(datalist.length);
+		console.log(classnumber);
+		centerPointInterval=datalist.length/classnumber;
+		centerlist=[];
+		whilenumber=0;
+		//设置四个位置的中心点
+		while(whilenumber<classnumber){
+			centerlist.push(datalist[centerPointInterval/2+centerPointInterval*whilenumber]);
+			whilenumber++;
+		}
+		var vestinmap=[]
+		for (var i = datalist.length - 1; i >= 0; i--) {
+			vestinmap.unshift(0);
+		}
+		console.log(finalkeamsclass(datalist,classnumber,centerlist,vestinmap))
+		
+	}
+	console.log(testlist)
+	Kmeans(testlist,4)
+</script>
+</html>

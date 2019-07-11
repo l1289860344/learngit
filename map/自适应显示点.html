@@ -1,0 +1,215 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width">
+    <title>自适应显示多个点标记</title>
+    <link rel="stylesheet" href="https://a.amap.com/jsapi_demos/static/demo-center/css/demo-center.css"/>
+    <style>
+        html, body, #container {
+            height: 1500px;
+            width: 1500px;
+        }
+
+        .amap-icon img{
+            width: 25px;
+            height: 34px;
+        }
+    </style>
+    <script type="text/javascript" src="./html2canvas.min.js"></script>
+</head>
+<body>
+<div id="container"></div>
+<div class="input-card">
+    <div id="inputinf">点击圆点查看详情</div>
+    <!--<h4>地图自适应</h4>-->
+    <!--<input id="setFitView" type="button" class="btn" value="地图自适应显示" />-->
+    <!-- <button class="btn" id="screenshots" onclick="onscreenshots()" style="margin-right:1rem;">截图</button>
+    <button class="btn" id="screenshots" onclick="tonext(-1)" style="margin-right:1rem;">上一点</button>
+    <button class="btn" id="screenshots" onclick="tonext(1)" style="margin-right:1rem;">下一点</button> -->
+</div>
+<div class="info">
+    <div id="centerCoord"></div>
+    <div id="tips"></div>
+</div>
+<script type="text/javascript"
+        src="https://webapi.amap.com/maps?v=1.4.15&key=29f6d33814cdfda02a1354f1868b4122"></script>
+<script src="./result.js"></script>
+<script src="./citylist.js"></script>
+
+<script type="text/javascript">
+    window.markers=markers
+    console.log(markers)
+    var str=location.href; //取得整个地址栏
+    var num=str.indexOf("?")
+    str=str.substr(num+1); //取得所有参数   stringvar.substr(start [, length ]
+    var arr=str.split("&"); //各个参数放到数组里
+    var radius=300 //聚合范围
+    var minMailCount=200 //聚合个数
+    var value="0";
+    var center=[ 120.079699,30.338404]; //定义不同的中心，截取不一样的图
+   // var center=[118.345401, 30.563537];//杭州市最左上的位置
+
+    var layer=16            //层数不能变，变化需要所有参数一起改变
+    var lngchange=0.02145  //使用于16层级的针对1000px*1000px地图的经度偏移量
+    var latchange=0.0186  //使用于16层级的针对1000px*1000px地图的纬度偏移量
+    var changeproportion=1.5 // 地图针对1000px*1000px像素下的改变倍数 1.5 为1500*1500
+    var iamgelength=400 //一共要截取多少张
+    var line=20 //列数
+
+
+    for(var i=0;i < arr.length;i++){
+        num=arr[i].indexOf("=");
+        if(num>0){
+             name=arr[i].substring(0,num);
+             value=arr[i].substr(num+1);
+        }
+    }
+    for(var i=0;i < city.length;i++){
+       if(value==city[i].id){
+           console.log("have")
+           console.log(city[i])
+           center= [city[i].longitude,city[i].Latitude]
+        }
+    }
+    city
+    var map = new AMap.Map('container', {
+        resizeEnable: true,
+        center:center,
+        zoom: layer 
+    });
+
+    map.clearMap();  // 清除地图覆盖物
+
+    /*var markers = [{
+        icon: '//a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png',
+        position: [116.205467, 39.907761]
+    }, {
+        icon: '//a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-2.png',
+        position: [116.368904, 39.913423]
+    }, {
+        icon: '//a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-3.png',
+        position: [116.305467, 39.807761]
+    }];*/
+
+
+    document.getElementById('centerCoord').innerHTML = '一共有'+markers.length+'个点标记';
+    document.getElementById('tips').innerHTML = "加载中";
+    // 添加事件监听, 使地图自适应显示到合适的范围
+    // 添加一些分布不均的点到地图上,地图上添加三个点标记，作为参照
+    var now = new Date();
+    var exitTime = now.getTime();
+    markerforeach(markers[0]);
+    var now = new Date();
+    var numberMillis = now.getTime() - exitTime;
+    console.log(numberMillis)
+    var i=1;
+    var timeout =setInterval(function () {
+          var k=0;
+          k=i;
+        if(k<markers.length){
+            k++;
+            try {    
+                 console.log(k)
+                 markerforeach(markers[k]);
+                 i=k
+            } catch (e) {
+               i=k
+            }   
+       }
+       else{
+        document.getElementById('tips').innerHTML = "加载完毕";
+        alert("加载完毕")
+        clearInterval(timeout);
+       }
+    },numberMillis);
+    function showInfoM(e){
+        console.log(e)
+        console.log(e.target.getExtData())
+        document.getElementById('inputinf').innerHTML = e.target.getExtData()+'<br />坐标为:'+e.lnglat.lng+','+e.lnglat.lat;
+    }
+    function markerforeach(marker){
+        var markerSingle =  new AMap.Marker({
+            map: map,
+            position: [marker.lnglat[0], marker.lnglat[1]],
+            offset: new AMap.Pixel(-13, -30),
+            extData:"当前"+radius+"米范围内有至少"+minMailCount+"件，当前"+marker.count+"件",
+        });
+        var factor = Math.pow((marker.count*100) / 3899999, 1 / 18);
+        var div = document.createElement('div');
+        var Hue = 180 - factor * 180;
+        var bgColor = 'hsla(' + Hue + ',100%,50%,0.7)';
+        var fontColor = 'hsla(' + Hue + ',100%,20%,1)';
+        var borderColor = 'hsla(' + Hue + ',100%,40%,1)';
+        var shadowColor = 'hsla(' + Hue + ',100%,50%,1)';
+        div.style.backgroundColor = bgColor;
+
+        var size = Math.round(30 + Math.pow((marker.count + 500) / 3899999, 1 / 5) * 20);
+        // console.log(marker)
+        // console.log(size);
+        // console.log(marker.count);
+        div.style.width = div.style.height = size + 'px';
+        div.style.border = 'solid 1px ' + borderColor;
+        div.style.borderRadius = size / 2 + 'px';
+        div.style.boxShadow = '0 0 1px ' + shadowColor;
+        div.innerHTML = marker.count;
+        div.style.lineHeight = size + 'px';
+        div.style.color = fontColor;
+        div.style.fontSize = '14px';
+        div.style.textAlign = 'center';
+        //绑定事件去除
+        markerSingle.on('click', showInfoM);
+        markerSingle.setOffset(new AMap.Pixel(-size / 2, -size / 2));
+        markerSingle.setContent(div)
+        i--;
+    }
+
+    function onscreenshots(){
+
+        var printcount=0
+        var timeout =setInterval(function () {
+            var center = map.getCenter(); //获取当前地图中心位置
+            
+            if(printcount<iamgelength){
+                printcount++;
+                html2canvas( document.getElementById('container')).then(function(canvas) {
+                    //document.body.appendChild(canvas);
+                    var strDataURI = canvas.toDataURL("image/jpeg");
+                    var center2 = map.getCenter(); 
+                    var image=strDataURI.replace("image/jpeg", "image/octet-stream");
+                    //window.location.href=image;
+                    console.log(center.lng)
+                    
+                    saveFile(image,printcount+"-"+center2.lng+"-"+center2.lat+".jpg")
+                    if(printcount%line==0){
+                        center.lng=center.lng-lngchange*changeproportion*line
+                        center.lat=center.lat-latchange*changeproportion
+                    }
+                    map.panTo([center.lng+lngchange*changeproportion, center.lat]);
+                });
+  
+           }
+           else{
+            clearInterval(timeout);
+           }
+        },2000);
+     
+    }
+    function saveFile(data, filename){
+        var save_link = document.createElementNS('http://www.w3.org/1999/xhtml', 'a');
+        save_link.href = data;
+        save_link.download = filename;
+       
+        var event = document.createEvent('MouseEvents');
+        event.initMouseEvent('click', true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
+        save_link.dispatchEvent(event);
+    };
+    function tonext(x){
+        var center = map.getCenter(); //获取当前地图中心位置
+         map.panTo([center.lng+lngchange*changeproportion*x, center.lat]);
+         //map.panTo([center.lng, center.lat-0.0186*1.5*x]);
+    }
+</script>
+</body>
+</html>

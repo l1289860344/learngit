@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width">
+    <title>点标记</title>
+    <link rel="stylesheet" href="https://a.amap.com/jsapi_demos/static/demo-center/css/demo-center.css"/>
+    <style>
+        html, body, #container {
+            height: 100%;
+        }
+    </style>
+</head>
+<body>
+<div id="container"></div>
+<div class="info" style='min-width:10rem;'>
+    <img src="//a.amap.com/lbs/static/img/js-markonapp.png" style='width:120px;height:120px'>
+    <div style='text-align: center'>手机扫码打开示例</div>
+</div>
+<script type="text/javascript"
+        src="https://webapi.amap.com/maps?v=1.4.15&key=29f6d33814cdfda02a1354f1868b4122"></script>
+<script>
+    var lon = 120.1954368450447;
+    var lat = 30.23056195813783;
+    var map = new AMap.Map("container", {
+        zoom: 18,
+        center: [lon, lat]
+    });
+
+
+
+    var marker = new AMap.Marker({
+        map: map,
+        position: [lon, lat],
+        content: '<div style="background-color: hsla(180, 100%, 50%, 0.7); height: 32px; width: 32px; border: 1px solid hsl(180, 100%, 40%); border-radius: 24px; box-shadow: hsl(180, 100%, 50%) 0px 0px 1px;">abcd</div>',
+        offset: new AMap.Pixel(-15, -15)
+    })
+
+    /*
+    * var marker = new AMap.Marker({
+        map: map,
+        position: [lon, lat],
+        label: {
+            offset: new AMap.Pixel(20, 20)
+        }
+    })
+    * */
+
+    var marker = new AMap.Marker({
+        map: map,
+        position: [120.2954368450447, 30.33056195813783],
+        label: {
+            offset: new AMap.Pixel(20, 20)
+        }
+    })
+
+    marker.on('click', function (e) {
+        marker.markOnAMAP({
+            name: '首开广场',
+            position: marker.getPosition()
+        })
+    })
+
+    if (AMap.UA.mobile) {
+        document.getElementsByClassName('info')[0].style.display = 'none';
+    }
+
+</script>
+</body>
+</html>
